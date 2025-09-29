@@ -1,201 +1,165 @@
-**`declarative-py` - Business Logic as YAML**
+# 🐍 Declarative-Py
 
-> **Replace Python boilerplate with declarative rules. Get AI fallback for free.**
+> **Zero-boilerplate Python runtime for SPC pipelines**  
+> Runs the same Service Pipeline Configurations (SPCs) created in **Pandas-as-a-Service**.  
 
-The zero-dependency Python library that turns complex frameworks into simple YAML.
-
----
-
-## 🚀 **What It Does**
-
-**Instead of this:**
-```python
-from pydantic import BaseModel
-from fastapi import FastAPI
-from langchain.llms import OpenAI
-
-class User(BaseModel):
-    name: str
-    age: int
-
-@app.post("/validate")
-def validate_user(data: dict):
-    try:
-        user = User(**data)
-        return {"valid": True}
-    except ValidationError:
-        # Call LLM to fix data
-        llm = OpenAI()
-        fixed = llm(f"Fix this user data: {data}")
-        return {"valid": False, "fixed": fixed}
-```
-
-**Write this:**
-```python
-from declarative_py import validate, fallback
-
-@fallback(llm="gpt-4", prompt="Fix this user data: {input}")
-def validate_user(data):
-    is_valid, _ = validate(data, {"name": "str", "age": "int"})
-    return {"valid": is_valid}
-```
+Declarative-Py turns Python into a **deterministic SPC execution engine** compatible with the EDT microkernel used in the browser editor.  
+It’s the backend twin of PaaS — designed to validate, execute, and extend pipelines without glue code or heavy frameworks.
 
 ---
 
-## 🎯 **Who It's For**
+## ✨ What is it?
 
-| Persona | Their Pain | declarative-py Solution |
-|---------|------------|------------------------|
-| **Data Scientists** | Pydantic boilerplate for every schema | `validate(data, {"column": "type"})` |
-| **API Developers** | FastAPI decorators, dependency injection | `RuleEngine("rules.yaml").serve(8000)` |
-| **AI Engineers** | LangChain complexity for simple LLM calls | `@fallback` decorator |
-| **Business Analysts** | Can't deploy Python logic | YAML rules that run anywhere |
+- 🔎 **Validation** – Zero-boilerplate type and schema validation (post-Pydantic).  
+- 📜 **Rules Engine** – YAML-driven if/then logic (post-FastAPI, post-LangChain).  
+- 🤖 **AI Fallback** – Functions can auto-fallback to GPT when they fail.  
+- ⚙️ **SPC Runtime** – Executes Service Pipeline Configurations (`*.spc.json / *.yaml`) exported from PaaS.  
+- 🔌 **Primitive Handlers** – Built-in support for:  
+  - `connector` → fetch APIs / files  
+  - `processor` → filter, project, derive, transform  
+  - `monitor` → threshold checks & alerts  
+  - `adapter` → webhooks, outputs  
+  - `aggregator` → sliding windows  
+  - `vault` → secret management  
 
----
-
-## 💡 **Core Features**
-
-### **1. Schema Validation Without Classes**
-```python
-# No more Pydantic models
-schema = {"name": "str", "age": "int?", "email": "str"}
-is_valid, errors = validate(data, schema)
-```
-
-### **2. YAML-Powered Business Rules**
-```yaml
-# rules/pricing.yaml
-rules:
-  - if: "customer_type == 'vip' and order_amount > 1000"
-    then:
-      discount: 0.15
-      shipping: "free"
-  - else:
-    then:
-      discount: 0.05
-```
-
-```python
-engine = RuleEngine("rules/pricing.yaml")
-result = engine.run(order_data)  # {"discount": 0.15, "shipping": "free"}
-```
-
-### **3. AI Fallback Built-In**
-```python
-@fallback(llm="gpt-4", prompt="Extract entities from: {input}")
-def extract_entities(text):
-    # If your function fails, AI takes over
-    return my_parser(text)
-```
-
-### **4. Instant APIs**
-```python
-# Zero to REST API in one line
-RuleEngine("business_rules.yaml").serve(port=8000)
-```
+Think of it as the **Python backend runtime** for the visual pipelines you design in Pandas-as-a-Service.
 
 ---
 
-## 🛠 **Zero Dependencies, Maximum Power**
+## 🌍 Why this matters
 
-**What you get:**
-- ✅ **Validation** (replaces Pydantic)
-- ✅ **Rule Engine** (replaces complex conditionals)  
-- ✅ **HTTP Server** (replaces FastAPI for simple APIs)
-- ✅ **LLM Integration** (replaces LangChain for basic use cases)
-- ✅ **Type Checking** (runtime validation with coercion)
+Traditionally, data + business logic requires:  
 
-**What you don't get:**
-- ❌ **No dependencies** (stdlib only, optional requests/yaml)
-- ❌ **No boilerplate** (write logic, not configuration)
-- ❌ **No framework lock-in** (just functions)
+- **Frontend**: React, forms, dashboards  
+- **Backend**: APIs, Pandas scripts, Celery jobs  
+- **Glue code everywhere**  
+
+With **SPC + Declarative-Py**:  
+
+```
+
+Frontend (PaaS) → SPC JSON/YAML → Backend (Declarative-Py)
+
+````
+
+- Business/AI describe intent in the browser  
+- SPC file becomes the **single source of truth**  
+- Declarative-Py executes deterministically in Python  
+- Same logic works across languages (browser JS, backend Python, future Go/WASM)
 
 ---
 
-## 🎪 **Real-World Usage**
+## 🚀 Quickstart
 
-### **Data Validation Pipeline**
-```python
-from declarative_py import validate, RuleEngine, fallback
+### Install
+```bash
+git clone https://github.com/your-org/declarative-py
+cd declarative-py
+pip install -r requirements.txt
+````
 
-@fallback(prompt="Clean and validate this customer data: {input}")
-def process_customer(raw_data):
-    # Validate structure
-    is_valid, _ = validate(raw_data, {
-        "name": "str", 
-        "email": "str", 
-        "age": "int?"
-    })
-    
-    # Apply business rules
-    engine = RuleEngine("rules/customer_tier.yaml")
-    return engine.run(raw_data)
-```
-
-### **Instant Business API**
-```python
-# Deploy rules as REST API in 30 seconds
-RuleEngine("rules/loan_approval.yaml").serve(port=8000)
-
-# Now POST JSON to http://localhost:8000
-# {"income": 75000, "credit_score": 680} 
-# → {"approved": true, "interest_rate": 0.045}
-```
-
----
-
-## 🔄 **How It Fits With Pandas as a Service**
-
-```
-Natural Language Request
-           ↓
-Pandas as a Service (SPC Generator)
-           ↓
-    declarative-py (Logic Engine) 
-           ↓
-   Production System
-```
-
-**Pandas as a Service** = Visual pipeline design + AI co-pilot  
-**declarative-py** = Business logic execution + validation + rules
-
----
-
-## 🚀 **Get Started**
+### Run an SPC
 
 ```bash
-pip install declarative-py
+python core.py run examples/pipeline.spc.json
 ```
 
-```python
-from declarative_py import validate, RuleEngine
+### Validate an SPC
 
-# Validate data
-is_valid, errors = validate({"name": "Alice", "age": "25"}, 
-                           {"name": "str", "age": "int"})
+```bash
+python core.py validate examples/pipeline.spc.json
+```
 
-# Run business rules  
-engine = RuleEngine("""
-rules:
-  - if: "age >= 18"
-    then: {"status": "adult"}
-  - else: 
-    then: {"status": "minor"}
-""")
+### Continuous Mode
 
-result = engine.run({"age": 25})  # {"status": "adult"}
+```bash
+python core.py run examples/pipeline.spc.json --watch --interval 10
+```
+
+### Serve Rules API
+
+```bash
+python core.py serve --port 8080 --rules examples/business_rules.yaml
 ```
 
 ---
 
-## 💰 **The Bottom Line**
+## 🧩 Example SPC
 
-**Stop writing framework code. Start writing business logic.**
+```json
+{
+  "spc_version": "1.0",
+  "meta": { "name": "ETL Demo" },
+  "services": {
+    "fetch": {
+      "type": "connector",
+      "status": "running",
+      "spec": { "url": "https://api.coindesk.com/v1/bpi/currentprice.json", "outputKey": "btc_price" }
+    },
+    "transform": {
+      "type": "processor",
+      "status": "running",
+      "spec": {
+        "inputKey": "btc_price",
+        "outputKey": "usd_price",
+        "pipes": [
+          { "project": ["bpi"] },
+          { "derive": { "usd": "data['bpi']['USD']['rate_float']" } }
+        ]
+      }
+    },
+    "alert": {
+      "type": "monitor",
+      "status": "running",
+      "spec": {
+        "checks": [{ "name": "btc_high", "dataKey": "usd_price", "expression": "data['usd'] > 50000" }],
+        "thresholds": { "btc_high": { "above": 50000 } }
+      }
+    }
+  },
+  "state": {}
+}
+```
 
-`declarative-py` gives you the power of modern Python ecosystems without the complexity. Write less code, ship faster, and let AI handle the edge cases.
+Run it:
 
-**Business logic should be declarative. Now it is.**
+```bash
+python core.py run examples/btc_pipeline.spc.json
+```
 
 ---
 
-*`declarative-py` - Because your time is better spent on insights, not infrastructure.*
+## 🔐 Security
+
+* `vault` handler integrates with environment variables or external providers
+* Secrets never stored directly in state
+* Supports rotation policies
+
+---
+
+## 🛤 Roadmap
+
+* [ ] Add full test suite for handler parity with JS microkernel
+* [ ] WASM backend for lightweight edge execution
+* [ ] Native Pandas/Numpy handler for heavy transforms
+* [ ] Multi-SPC orchestration (composable pipelines)
+
+---
+
+## 📖 Philosophy
+
+Declarative-Py isn’t just another Python library.
+It’s part of a **larger system**:
+
+* 🐼 **Pandas-as-a-Service (frontend)** → Visual SPC editor
+* 🐍 **Declarative-Py (backend)** → SPC runtime
+* 🌲 **SPC Format** → Portable, language-agnostic logic
+
+Together, they collapse the boundary between frontend and backend.
+Your **business logic lives once, runs anywhere**.
+
+---
+
+## 📜 License
+
+MIT
