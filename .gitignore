@@ -13,6 +13,8 @@ __pycache__/
 .vscode/
 .idea/
 *.swp
+*.swo
+*~
 
 # Environments
 .env
@@ -21,6 +23,7 @@ __pycache__/
 venv/
 Pipfile.lock
 poetry.lock
+pyvenv.cfg
 
 # Data & cache
 .DS_Store
@@ -30,19 +33,19 @@ poetry.lock
 *.tmp
 *.cache/
 *.ipynb_checkpoints/
-
-# YAJPH/HouseHack OS specific
-*.secrets.yaml
-*.config.yaml
-*.prompt.yaml
-*.output.yaml
-*.debug.log
+__pycache__/
 
 # Git / Debug tooling
 coverage/
 dist/
 build/
 *.tgz
+*.whl
+*.egg-info/
+htmlcov/
+.coverage
+.pytest_cache/
+.mypy_cache/
 
 # LLM results
 *.md.output
@@ -50,3 +53,51 @@ build/
 logs/
 outputs/
 results/
+
+# Lua specific
+*.luac
+*.lua~
+*.out
+*.lua.output
+
+# LuaRocks
+.luarocks/
+luarocks-*.config
+*.rockspec
+
+# Lua IDE/editor
+*.swp
+*.swo
+.vscode/launch.json
+.vscode/settings.json
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.pid
+
+# OS generated
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Project specific
+.DS_Store
+*.code-workspace
+
+# Node.js (if you have Node in impo/)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Go (if you have Go in impo/)
+*.exe
+*.test
+*.out
+*.prof
+vendor/
+go.sum

@@ -1,0 +1,144 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "pAI Bridge Interface Definition",
+  "description": "Typed contract for pAI bridge operations",
+  "version": "1.0.0",
+  "language": "polyglot",
+  "functions": {
+    "shape_info": {
+      "description": "Get DataFrame shape information",
+      "args": ["DataFrame"],
+      "returns": {
+        "type": "object",
+        "properties": {
+          "rows": {"type": "integer"},
+          "cols": {"type": "integer"}
+        },
+        "required": ["rows", "cols"]
+      },
+      "error_type": "ValueError"
+    },
+    "schema_validation": {
+      "description": "Validate DataFrame schema",
+      "args": ["DataFrame", "array"],
+      "returns": {
+        "type": "object",
+        "properties": {
+          "is_valid": {"type": "boolean"},
+          "missing_columns": {"type": "array", "items": {"type": "string"}},
+          "extra_columns": {"type": "array", "items": {"type": "string"}},
+          "expected_count": {"type": "integer"},
+          "actual_count": {"type": "integer"}
+        },
+        "required": ["is_valid"]
+      },
+      "error_type": "ValueError"
+    },
+    "basic_info": {
+      "description": "Get basic DataFrame metadata",
+      "args": ["DataFrame"],
+      "returns": {
+        "type": "object",
+        "properties": {
+          "row_count": {"type": "integer"},
+          "column_names": {"type": "array", "items": {"type": "string"}},
+          "is_empty": {"type": "boolean"},
+          "memory_mb": {"type": "number"}
+        },
+        "required": ["row_count", "column_names"]
+      }
+    },
+    "get_column_values": {
+      "description": "Extract column values as primitive list",
+      "args": ["DataFrame", "string"],
+      "returns": {
+        "type": "array"
+      },
+      "error_type": "ValueError"
+    },
+    "json_lens_extract": {
+      "description": "Extract nested JSON fields using composable path",
+      "args": ["DataFrame", "string", "array"],
+      "returns": {
+        "type": "object",
+        "properties": {
+          "extracted_values": {"type": "array"},
+          "path": {"type": "array", "items": {"type": "string"}},
+          "count": {"type": "integer"}
+        },
+        "required": ["extracted_values", "count"]
+      },
+      "error_type": ["ValueError", "JSONDecodeError"]
+    },
+    "extract_numerical_stats": {
+      "description": "Extract numerical statistics from column",
+      "args": ["DataFrame", "string"],
+      "returns": {
+        "type": "object",
+        "properties": {
+          "min": {"type": "number"},
+          "max": {"type": "number"},
+          "mean": {"type": "number"},
+          "std": {"type": "number"},
+          "count": {"type": "integer"},
+          "null_count": {"type": "integer"}
+        },
+        "required": ["min", "max", "mean", "count"]
+      },
+      "error_type": "ValueError"
+    },
+    "describe_dataframe": {
+      "description": "Get comprehensive DataFrame description",
+      "args": ["DataFrame"],
+      "returns": {
+        "type": "object",
+        "properties": {
+          "shape": {
+            "type": "object",
+            "properties": {
+              "rows": {"type": "integer"},
+              "cols": {"type": "integer"}
+            }
+          },
+          "dtypes": {"type": "object"},
+          "memory_usage": {"type": "integer"},
+          "null_counts": {"type": "object"},
+          "unique_counts": {"type": "object"}
+        }
+      }
+    }
+  },
+  "errors": {
+    "pAIError": {
+      "type": "object",
+      "properties": {
+        "source": {"type": "string", "enum": ["albeo", "impo", "bridge"]},
+        "component": {"type": "string"},
+        "error_type": {"type": "string"},
+        "message": {"type": "string"},
+        "context": {"type": "object"},
+        "stack_trace": {"type": "string"},
+        "has_error": {"type": "boolean"}
+      },
+      "required": ["source", "component", "error_type", "message", "has_error"]
+    }
+  },
+  "data_types": {
+    "DataFrame": {
+      "description": "Pandas DataFrame - passed as reference, never as value",
+      "serializable": false
+    },
+    "Primitive": {
+      "description": "Primitive types that can cross language boundaries",
+      "oneOf": [
+        {"type": "string"},
+        {"type": "number"},
+        {"type": "integer"},
+        {"type": "boolean"},
+        {"type": "null"},
+        {"type": "array", "items": {"$ref": "#/data_types/Primitive"}},
+        {"type": "object", "additionalProperties": {"$ref": "#/data_types/Primitive"}}
+      ]
+    }
+  }
+}
