@@ -1,165 +1,135 @@
-# 🐍 Declarative-Py
+# Polyglot AI 
 
-> **Zero-boilerplate Python runtime for SPC pipelines**  
-> Runs the same Service Pipeline Configurations (SPCs) created in **Pandas-as-a-Service**.  
+Deterministic polyglot runtime for AI-generated systems with enforced architectural boundaries.
 
-Declarative-Py turns Python into a **deterministic SPC execution engine** compatible with the EDT microkernel used in the browser editor.  
-It’s the backend twin of PaaS — designed to validate, execute, and extend pipelines without glue code or heavy frameworks.
+## Overview
 
----
+this provides a stable foundation for AI-generated code by enforcing clean separation between algebraic computation (ALBEO) and imperative orchestration (IMPO). The system prevents common AI-generated code failures through structural bridges that maintain runtime invariants across language boundaries.
 
-## ✨ What is it?
-
-- 🔎 **Validation** – Zero-boilerplate type and schema validation (post-Pydantic).  
-- 📜 **Rules Engine** – YAML-driven if/then logic (post-FastAPI, post-LangChain).  
-- 🤖 **AI Fallback** – Functions can auto-fallback to GPT when they fail.  
-- ⚙️ **SPC Runtime** – Executes Service Pipeline Configurations (`*.spc.json / *.yaml`) exported from PaaS.  
-- 🔌 **Primitive Handlers** – Built-in support for:  
-  - `connector` → fetch APIs / files  
-  - `processor` → filter, project, derive, transform  
-  - `monitor` → threshold checks & alerts  
-  - `adapter` → webhooks, outputs  
-  - `aggregator` → sliding windows  
-  - `vault` → secret management  
-
-Think of it as the **Python backend runtime** for the visual pipelines you design in Pandas-as-a-Service.
-
----
-
-## 🌍 Why this matters
-
-Traditionally, data + business logic requires:  
-
-- **Frontend**: React, forms, dashboards  
-- **Backend**: APIs, Pandas scripts, Celery jobs  
-- **Glue code everywhere**  
-
-With **SPC + Declarative-Py**:  
+## Architecture
 
 ```
+ALBEO (Python) ↔ Structural Bridge ↔ IMPO (Lua)
+     ↓                              ↓
+Deterministic Computation    I/O & Orchestration
+```
 
-Frontend (PaaS) → SPC JSON/YAML → Backend (Declarative-Py)
+### Core Concepts
 
-````
+**ALBEO** - Algebraic business logic operations:
+- Pure, deterministic computations
+- Vectorized data transformations (Pandas/NumPy)
+- Schema-native operations
+- No side effects, no I/O
 
-- Business/AI describe intent in the browser  
-- SPC file becomes the **single source of truth**  
-- Declarative-Py executes deterministically in Python  
-- Same logic works across languages (browser JS, backend Python, future Go/WASM)
+**IMPO** - Imperative orchestration layer:
+- External API calls with retry logic
+- File I/O sequences
+- Workflow state management
+- Temporal operations and scheduling
 
----
+**Structural Bridge** - Enforced boundary layer:
+- Converts complex objects to primitives
+- Prevents cross-language leakage
+- Maintains runtime invariants
+- Provides unified error handling
 
-## 🚀 Quickstart
+## Quick Start
 
-### Install
 ```bash
-git clone https://github.com/your-org/declarative-py
-cd declarative-py
+# Clone repository
+git clone https://github.com/whitecell-dev/polyglot-ai
+cd Polyglot-AI
+
+# Install dependencies
 pip install -r requirements.txt
-````
 
-### Run an SPC
-
-```bash
-python core.py run examples/pipeline.spc.json
+# Run reference implementation
+python core/bridge_reference.py
 ```
 
-### Validate an SPC
+## Core Components
 
-```bash
-python core.py validate examples/pipeline.spc.json
+```
+polyglot-ai/
+├── core/
+│   ├── bridge_reference.py          # Canonical implementation
+│   ├── base_engine.py               # Base runtime classes
+│   └── types.py                     # Shared type definitions
+├── templates/
+│   ├── impo_functions.lua           # IMPO function templates
+│   └── albeo_functions.py           # ALBEO pattern templates
+└── examples/
+    └── production_workflow.py       # Complete integration example
 ```
 
-### Continuous Mode
+## Usage Example
 
-```bash
-python core.py run examples/pipeline.spc.json --watch --interval 10
+```python
+from pAI.core import pAIimperativeEngine, pAIAlgebraicCore
+
+# Initialize runtime
+engine = pAIImperativeEngine()
+albeo = pAIAlgebraicCore()
+
+# ALBEO: Pure computation
+applications_with_ratios = albeo.calculate_financial_ratios(applications)
+
+# IMPO: External orchestration  
+validation = engine.validate_dataframe_structure(applications, expected_columns)
+api_result = engine.external_api_call("CreditBureau_123", 3, 100)
+
+# Bridge maintains boundary integrity
+assert validation['structural_valid'] == True
+assert isinstance(api_result['success'], bool)  # Primitives only
 ```
 
-### Serve Rules API
+## Bridge Enforcement
 
-```bash
-python core.py serve --port 8080 --rules examples/business_rules.yaml
+The structural bridge enforces four critical functions:
+
+1. **Configuration Purity** - Minimal, stable API surface
+2. **Data Semantics Mapping** - Type-safe primitive conversion
+3. **Syntax Enforcement** - LLM-safe patterns only
+4. **Error Boundary** - Unified cross-language error handling
+
+## AI Generation Safety
+
+prevents common AI-generated code failures:
+
+- **No object leakage** - Complex objects never cross language boundaries
+- **Immutable data flow** - ALBEO operations never mutate input data
+- **Deterministic execution** - IMPO handles all non-deterministic operations
+- **Stable interfaces** - Bridge functions provide consistent primitives
+
+## Production Patterns
+
+```python
+# ALBEO: Always immutable
+def calculate_ratios(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()  # Critical: never mutate input
+    df['dti_ratio'] = (df['debt'] / df['income']) * 100
+    return df
+
+# IMPO: Only orchestration
+def external_api_call(api_name: str, max_retries: int) -> Dict[str, Any]:
+    # Returns only primitives: bool, int, str, list, dict
+    return {'success': True, 'attempts': 1}
 ```
 
----
+## Requirements
 
-## 🧩 Example SPC
+- Python 3.8+
+- Lua 5.3+ (via lupa)
+- Pandas 1.3+
+- NumPy 1.20+
 
-```json
-{
-  "spc_version": "1.0",
-  "meta": { "name": "ETL Demo" },
-  "services": {
-    "fetch": {
-      "type": "connector",
-      "status": "running",
-      "spec": { "url": "https://api.coindesk.com/v1/bpi/currentprice.json", "outputKey": "btc_price" }
-    },
-    "transform": {
-      "type": "processor",
-      "status": "running",
-      "spec": {
-        "inputKey": "btc_price",
-        "outputKey": "usd_price",
-        "pipes": [
-          { "project": ["bpi"] },
-          { "derive": { "usd": "data['bpi']['USD']['rate_float']" } }
-        ]
-      }
-    },
-    "alert": {
-      "type": "monitor",
-      "status": "running",
-      "spec": {
-        "checks": [{ "name": "btc_high", "dataKey": "usd_price", "expression": "data['usd'] > 50000" }],
-        "thresholds": { "btc_high": { "above": 50000 } }
-      }
-    }
-  },
-  "state": {}
-}
-```
+## Dependencies
 
-Run it:
+- lupa: Python-Lua bridge
+- pandas: Data manipulation
+- numpy: Numerical operations
 
-```bash
-python core.py run examples/btc_pipeline.spc.json
-```
-
----
-
-## 🔐 Security
-
-* `vault` handler integrates with environment variables or external providers
-* Secrets never stored directly in state
-* Supports rotation policies
-
----
-
-## 🛤 Roadmap
-
-* [ ] Add full test suite for handler parity with JS microkernel
-* [ ] WASM backend for lightweight edge execution
-* [ ] Native Pandas/Numpy handler for heavy transforms
-* [ ] Multi-SPC orchestration (composable pipelines)
-
----
-
-## 📖 Philosophy
-
-Declarative-Py isn’t just another Python library.
-It’s part of a **larger system**:
-
-* 🐼 **Pandas-as-a-Service (frontend)** → Visual SPC editor
-* 🐍 **Declarative-Py (backend)** → SPC runtime
-* 🌲 **SPC Format** → Portable, language-agnostic logic
-
-Together, they collapse the boundary between frontend and backend.
-Your **business logic lives once, runs anywhere**.
-
----
-
-## 📜 License
+## License
 
 MIT
